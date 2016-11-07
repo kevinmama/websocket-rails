@@ -33,8 +33,11 @@ module WebsocketRails
       singleton.shutdown!
     end
 
-    def self.redis
-      singleton.redis
+    def redis
+      @redis ||= begin
+        redis_options = WebsocketRails.config.redis_options
+        EM.reactor_running? ? Redis.new(redis_options) : ruby_redis
+      end
     end
 
     def self.singleton
